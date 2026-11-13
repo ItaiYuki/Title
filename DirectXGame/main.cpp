@@ -22,6 +22,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	 gameScene->Initialize();
 	// タイトルシーンのインスタンス生成
 	TitleScene* titleScene = new TitleScene();
+
+
+
 	// タイトルシーンの初期化
 	titleScene->Initialize();
 
