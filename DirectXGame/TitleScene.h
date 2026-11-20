@@ -1,39 +1,39 @@
+
 #pragma once
+
 #include "KamataEngine.h"
 
-
-	
-
-
-class TitleScene
-{
+class TitleScene {
 public:
-	// デストラクタ
-	~TitleScene();
+  // デストラクタ
+  ~TitleScene();
 
-	// 初期化
-	void Initialize();
+  // 初期化
+  void Initialize();
 
-	// 更新
-	void Update();
+  // 更新
+  void Update();
 
-	// 描画
-	void Draw();
+  // 描画
+  void Draw();
 
-	bool IsFinished() const;
+  // タイトル終了判定
+  bool IsFinished() const;
 
 private:
-	bool isFinished_ = false;
+  // タイトル終了フラグ
+  bool isFinished_ = false;
 
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0;
-	uint32_t textureHandleFont_ = 0;
-	uint32_t textureHandleHit_ = 0;
+  // テクスチャハンドル
+  uint32_t textureHandle_ = 0;
+  uint32_t textureHandleFont_ = 0;
+  uint32_t textureHandleHit_ = 0;
 
-	// スプライト
-	KamataEngine::Sprite* sprite_ = nullptr;
-	KamataEngine::Sprite* spriteFont_ = nullptr;
-	KamataEngine::Sprite* spriteHit_ = nullptr;
+  // スプライト
+  KamataEngine::Sprite *sprite_ = nullptr;
+  KamataEngine::Sprite *spriteFont_ = nullptr;
+  KamataEngine::Sprite *spriteHit_ = nullptr;
 
-	int timer = 0;
+  // タイマー
+  int timer_ = 0;
 };

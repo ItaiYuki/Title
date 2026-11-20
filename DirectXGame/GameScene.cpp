@@ -1,84 +1,90 @@
+
 #include "GameScene.h"
 
 using namespace KamataEngine;
 
-// デストラクタ
-GameScene::~GameScene() {
-	delete stage_;
-	delete player_;
-	delete graphBar_;
-	delete drawNumber_;
-
-	delete modelPlayer_;
-}
-
 // 初期化
 void GameScene::Initialize() {
-	// ファイル名を指定してテクスチャを読み込む
-	textureHandleStage_ = TextureManager::Load("stage.png");
-	textureHandleGraph_ = TextureManager::Load("white1x1.png");
-	textureHandleNumber_ = TextureManager::Load("number.png");
-	// 3Dモデルの生成
-	modelPlayer_ = Model::CreateFromOBJ("player");
+  // テクスチャ読み込み
+  textureHandleStage_ = TextureManager::Load("stage.png");
+  textureHandleGraph_ = TextureManager::Load("white1x1.png");
+  textureHandleNumber_ = TextureManager::Load("number.png");
 
-	// カメラの初期化
-	camera_.translation_ = {0, 0, -20};
-	camera_.Initialize();
+  // 3Dモデル生成
+  modelPlayer_.reset(Model::CreateFromOBJ("player"));
 
-	stage_ = new Stage();
-	stage_->Initialize(textureHandleStage_);
-	player_ = new Player();
-	player_->Initialize(modelPlayer_);
-	graphBar_ = new GraphBar();
-	graphBar_->Initialize(textureHandleGraph_);
-	drawNumber_ = new DrawNumber();
-	drawNumber_->Initialize(textureHandleNumber_);
+  // カメラ初期化
+  camera_.translation_ = {0, 0, -20};
+  camera_.Initialize();
+
+  // Stage生成
+  stage_ = std::make_unique<Stage>();
+  stage_->Initialize(textureHandleStage_);
+
+  // Player生成
+  player_ = std::make_unique<Player>();
+  player_->Initialize(modelPlayer_.get());
+
+  // GraphBar生成
+  graphBar_ = std::make_unique<GraphBar>();
+  graphBar_->Initialize(textureHandleGraph_);
+
+  // DrawNumber生成
+  drawNumber_ = std::make_unique<DrawNumber>();
+  drawNumber_->Initialize(textureHandleNumber_);
 }
 
 // 更新
 void GameScene::Update() {
-	hp_--;
-	if (hp_ < 0) {
-		hp_ = 200u;
-	}
-	gameScore_++;
+  // HP減少
+  hp_--;
 
-	stage_->Update();
-	player_->Update();
-	graphBar_->Update(hp_);
-	drawNumber_->Update(gameScore_);
+  if (hp_ < 0) {
+    hp_ = 200;
+  }
+
+  // スコア加算
+  gameScore_++;
+
+  // 各クラスの更新
+  stage_->Update();
+  player_->Update();
+  graphBar_->Update(static_cast<uint32_t>(hp_));
+  drawNumber_->Update(static_cast<uint32_t>(gameScore_));
 }
 
 // 描画
 void GameScene::Draw() {
-	// DirectXCommonインスタンスの取得
-	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+  DirectXCommon *dxCommon = DirectXCommon::GetInstance();
 
-	// スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+  // スプライト描画前処理
+  Sprite::PreDraw(dxCommon->GetCommandList());
 
-	stage_->Draw();
+  // ステージ描画
+  stage_->Draw();
 
-	// スプライト描画後処理
-	Sprite::PostDraw();
+  // スプライト描画後処理
+  Sprite::PostDraw();
 
-	// 深度バッファクリア
-	dxCommon->ClearDepthBuffer();
-	// 3Dモデル描画前処理
-	Model::PreDraw();
+  // 深度バッファクリア
+  dxCommon->ClearDepthBuffer();
 
-	// ここに3Dモデルインスタンスの描画処理を記述する
-	player_->Draw(camera_);
+  // 3Dモデル描画前処理
+  Model::PreDraw();
 
-	// 3Dモデル描画後処理
-	Model::PostDraw();
+  // プレイヤー描画
+  player_->Draw(camera_);
 
-	// スプライト描画前処理
-	Sprite::PreDraw(dxCommon->GetCommandList());
+  // 3Dモデル描画後処理
+  Model::PostDraw();
 
-	graphBar_->Draw();
-	drawNumber_->Draw();
+  // スプライト描画前処理
+  Sprite::PreDraw(dxCommon->GetCommandList());
 
-	// スプライト描画後処理
-	Sprite::PostDraw();
+  // HPとスコア描画
+  graphBar_->Draw();
+  drawNumber_->Draw();
+
+  // スプライト描画後処理
+  Sprite::PostDraw();
 }

@@ -1,25 +1,27 @@
+
 #pragma once
+
 #include "KamataEngine.h"
 
 class Stage {
 public:
-	// デストラクタ
-	~Stage();
+  // デストラクタ
+  ~Stage();
 
-	// 初期化
-	void Initialize(uint32_t TtextureHandle);
+  // 初期化
+  void Initialize(uint32_t textureHandle);
 
-	// 更新
-	void Update();
+  // 更新
+  void Update();
 
-	// 描画
-	void Draw();
+  // 描画
+  void Draw();
 
 private:
-	// テクスチャハンドル
-	uint32_t textureHandle_ = 0;
+  // テクスチャハンドル
+  uint32_t textureHandle_ = 0;
 
-	// スプライト
-	KamataEngine::Sprite* sprite_ = nullptr;
-	KamataEngine::Sprite* sprite2_ = nullptr;
+  // スプライト
+  KamataEngine::Sprite *sprite_ = nullptr;
+  KamataEngine::Sprite *sprite2_ = nullptr;
 };

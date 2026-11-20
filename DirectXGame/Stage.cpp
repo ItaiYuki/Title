@@ -1,37 +1,55 @@
+
 #include "Stage.h"
 
 using namespace KamataEngine;
-using namespace MathUtility;
 
+// デストラクタ
 Stage::~Stage() {
-	delete sprite_;
-	delete sprite2_;
+  delete sprite_;
+  delete sprite2_;
+
+  sprite_ = nullptr;
+  sprite2_ = nullptr;
 }
 
 // 初期化
-void Stage::Initialize(uint32_t TtextureHandle) {
-	textureHandle_ = TtextureHandle;
+void Stage::Initialize(uint32_t textureHandle) {
+  textureHandle_ = textureHandle;
 
-	// スプライトインスタンスの生成
-	sprite_ = Sprite::Create(textureHandle_, {0, 0});
-	sprite2_ = Sprite::Create(textureHandle_, {1280, 0});
+  // スプライト生成
+  sprite_ = Sprite::Create(textureHandle_, {0, 0});
+  sprite2_ = Sprite::Create(textureHandle_, {1280, 0});
 }
 
 // 更新
 void Stage::Update() {
-	// 移動
-	Vector2 position = sprite_->GetPosition();
-	position.x -= 2;
-	if (position.x < -1280) {
-		position.x += 1280;
-	}
-	sprite_->SetPosition(position);
-	position.x += 1280;
-	sprite2_->SetPosition(position);
+  if (!sprite_ || !sprite2_) {
+    return;
+  }
+
+  // ステージ移動
+  Vector2 position = sprite_->GetPosition();
+
+  position.x -= 2.0f;
+
+  // 画面外に出たら戻す
+  if (position.x < -1280.0f) {
+    position.x += 1280.0f;
+  }
+
+  sprite_->SetPosition(position);
+
+  position.x += 1280.0f;
+  sprite2_->SetPosition(position);
 }
 
 // 描画
 void Stage::Draw() {
-	sprite_->Draw();
-	sprite2_->Draw();
+  if (sprite_) {
+    sprite_->Draw();
+  }
+
+  if (sprite2_) {
+    sprite2_->Draw();
+  }
 }

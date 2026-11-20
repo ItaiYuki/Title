@@ -1,86 +1,77 @@
-#include <Windows.h>
 
- #include "GameScene.h"
+#include <Windows.h>
+#include <memory>
+
+#include "GameScene.h"
 #include "KamataEngine.h"
 #include "TitleScene.h"
+
 using namespace KamataEngine;
 
-// Windowsアプリでのエントリーポイント(main関数)
+// エントリーポイント
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+  // エンジン初期化
+  KamataEngine::Initialize(L"１");
 
-	
+  // DirectXCommon取得
+  DirectXCommon *dxCommon = DirectXCommon::GetInstance();
 
-	// エンジンの初期化
-	KamataEngine::Initialize(L"LE3D_05_イタイ_ユウキ");
+  // シーン生成
+  std::unique_ptr<GameScene> gameScene = std::make_unique<GameScene>();
 
-	// DirectXCommon インスタンスの取得
-	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+  std::unique_ptr<TitleScene> titleScene = std::make_unique<TitleScene>();
 
-	// ゲームシーンのインスタンス生成
-	 GameScene* gameScene = new GameScene();
-	// ゲームシーンの初期化
-	 gameScene->Initialize();
-	// タイトルシーンのインスタンス生成
-	TitleScene* titleScene = new TitleScene();
+  // 初期化
+  gameScene->Initialize();
+  titleScene->Initialize();
 
+  // シーン管理
+  enum Scene {
+    TITLE,
+    GAME,
+  };
 
+  Scene scene = TITLE;
 
-	// タイトルシーンの初期化
-	titleScene->Initialize();
+  // メインループ
+  while (true) {
+    // エンジン更新
+    if (KamataEngine::Update()) {
+      break;
+    }
 
-	enum Scene {
-		TITLE,
-		GAME,
-	};
+    // シーン更新
+    if (scene == TITLE) {
+      titleScene->Update();
 
-	Scene scene = TITLE;
+      // タイトル終了ならゲームへ
+      if (titleScene->IsFinished()) {
+        scene = GAME;
+      }
+    } else if (scene == GAME) {
+      gameScene->Update();
+    }
 
+    // 描画開始
+    dxCommon->PreDraw();
 
-	// メインループ
-	while (true) {
-		// エンジンの更新
-		if (KamataEngine::Update()) {
-			break;
-		}
+    // シーン描画
+    if (scene == TITLE) {
+      titleScene->Draw();
+    } else if (scene == GAME) {
+      gameScene->Draw();
+    }
 
-		if (scene == TITLE) {
-			titleScene->Update();
+    // 描画終了
+    dxCommon->PostDraw();
+  }
 
-			// タイトル終了ならゲームへ
-			if (titleScene->IsFinished()) {
-				scene = GAME;
-			}
-		} else if (scene == GAME) {
-			gameScene->Update();
-		}
+  // シーンの解放
+  gameScene.reset();
+  titleScene.reset();
 
-		// 描画開始
-		dxCommon->PreDraw();
+  // エンジン終了
+  KamataEngine::Finalize();
 
-		if (scene == TITLE) {
-			titleScene->Draw();
-		} else if (scene == GAME) {
-			gameScene->Draw();
-		}
-
-		// 描画終了
-		dxCommon->PostDraw();
-	}
-
-	// ゲームシーンの削除
-	 delete gameScene;
-	// nullptrの代入
-	 gameScene = nullptr;
-
-	// タイトルシーンの削除
-	 delete titleScene;
-	// nullptrの代入
-	 titleScene = nullptr;
-
-	// エンジンの終了処理
-	KamataEngine::Finalize();
-
-	return 0;
+  return 0;
 }
-
-
